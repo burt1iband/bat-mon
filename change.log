@@ -1,0 +1,14 @@
+***Change log for bat-mon- the Fluxable battery monitor:
+
+0.1.0: (early may 2016): The bat-mon script was cobled together, and tested run as a cronjob.
+
+0.1.1: (mid May 2016): Rather crude .ogg sound alert files are created.
+
+0.2.0: 23/05/2016- Systemd service and timer files now control the bat-mon script.
+ This will be the first push to git, and hopefully we will have an AUR package today.
+ 
+* ToDo:
+Fix low battery test to keep running as long as we are below the low battery threshhold even when the battery is charging.
+Add a simple configuration GUI.
+   
+B.H., 23/05/2016_00:40CDT_Mx

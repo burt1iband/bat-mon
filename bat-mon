@@ -1,0 +1,98 @@
+#!/bin/bash
+## bat-mon
+## by B.H., 07/05/2016
+
+## Define initial variables
+ActCrit="/sbin/poweroff"
+BatCrit="7"
+BatLow="20"
+SndPath="/usr/share/sounds/fluxable/"
+BatCrit_snd="${SndPath}battery-critical.ogg"
+BatLow_snd="${SndPath}battery-low.ogg"
+BatPath="/sys/class/power_supply/BAT0/"
+Charging_snd="${SndPath}battery-charging.ogg"
+GUI="$(pidof Xorg)"
+ICON="/usr/share/icons/mate/48x48/devices/battery.png"
+PLAYcmd="play -q"
+Sleep="210"
+SysSD_snd="${SndPath}sys-shutdown.ogg"
+
+## Allow only one bat-mon instance
+Count="$(pgrep -c bat-mon)"
+if [ "$Count" -ge "2" ]; then
+exit
+else
+echo "Ban-mon is on the job!"
+fi
+ 
+## Check for config files & parse any that are found.
+     if [ -f /etc/fluxable/power.conf ]; then
+. /etc/fluxable/power.conf
+     fi
+
+     if [ -f ~/.fluxable/power.conf ]; then
+. ~/.fluxable/power.conf
+     fi 
+
+## Are we running a GUI?/How will we notify?
+     if ! [ -z "$GUI" ]; then 
+INFcmd="notify-send -i "$ICON""
+     else
+INFcmd="/usr/bin/wall -n"
+     fi
+
+RunAs="$(id -u)"
+XDG_RUNTIME_DIR="/run/user/${RunAs}"
+echo "bat-mon ran $(date)" >> /tmp/fbm.log
+echo """""User id: ${RunAs}" >> /tmp/fbm.log 
+
+
+ if [ -e "$BatPath" ]; then
+BatStat="$(<$BatPath/status)"
+else
+$INFcmd "Bat-mon can not access required data, so
+you will not be informed when battery charge is low.
+*this computer may shutdown with out warning."
+fi
+
+## Things to do when critical battery state is reached
+crit() {
+$PLAYcmd "$BatCrit_snd"
+$INFcmd "This computer will start shutting down in 1 minute!
+Save your work or risk losing recent changes.
+Alternatively, plug or pray!"
+sleep 60
+BatStat="$(<${BatPath}/status)"
+     if [ "$BatStat" == "Charging" ]; then
+$PLAYcmd "$Charging_snd"
+$INFcmd "Your battery is charging, so system shutdown has been suspended."
+test
+     else
+$PLAYcmd "$SysSD_snd"
+$ActCrit
+fi
+}
+
+## Retestfor remaining charge
+ test() {
+while [ "$CHARGE" -gt "$BatCrit" ]; do
+sleep "$Sleep"
+         CHARGE="$(<$BatPath/capacity)"
+     if [ "$CHARGE" -le "$BatCrit" ]; then
+crit
+elif [ "$CHARGE" -gt "$BatLow" ]; then
+exit
+fi
+done
+}
+
+     if [ "$BatStat" == "Discharging" ]; then
+         CHARGE="$(<$BatPath/capacity)"
+     if [ "$CHARGE" -le "$BatCrit" ]; then
+crit
+     elif [ "$CHARGE" -le "$BatLow" ]; then
+$PLAYcmd "$BatLow_snd"
+$INFcmd "*Low Battery Alert: ${CHARGE}% Remains*"
+    test     
+fi
+     fi

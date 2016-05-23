@@ -1,0 +1,10 @@
+ [Unit]
+ Description=Bat-Mon ScriptStarter
+
+RefuseManualStart=no
+ RefuseManualStop=no
+ 
+[Service]
+ Type=simple
+ ExecStart=/usr/local/bin/bat-mon
+ 

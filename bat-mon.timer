@@ -1,0 +1,17 @@
+ [Unit]
+ Description=monitor battery charge
+ RefuseManualStart=no
+ RefuseManualStop=no
+
+ [Timer]
+ Persistent=false
+WakeSystem=false 
+##OnCalendar=Mon-Fri *-*-* 11:30:00
+OnStartupSec=75s 
+OnUnitActiveSec=7min
+Unit=bat-mon.service
+
+ [Install]
+ WantedBy=default.target
+
+
