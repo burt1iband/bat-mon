@@ -38,10 +38,10 @@ fi
 ## always send wall msgs if a VT console is open.  
 inform() {
 GUI="$(pidof Xorg)"
+CLI="$(users|wc -w)"
      if [ -n "$GUI" ]; then 
 /usr/bin/notify-send -i "$Icon" "${1}"
 echo "GUI detected" >> /tmp/fbm.log
-CLI="$(users|wc -w)"
 if [ $CLI -ge "2" ]; then
 /usr/bin/wall -n $1
      fi
