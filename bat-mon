@@ -11,8 +11,7 @@ BatCrit_snd="${SndPath}battery-critical.ogg"
 BatLow_snd="${SndPath}battery-low.ogg"
 BatPath="/sys/class/power_supply/BAT0/"
 Charging_snd="${SndPath}battery-charging.ogg"
-GUI="$(pidof Xorg)"
-ICON="/usr/share/icons/mate/48x48/devices/battery.png"
+Icon="/usr/share/icons/mate/48x48/devices/battery.png"
 PLAYcmd="play -q"
 Sleep="210"
 SysSD_snd="${SndPath}sys-shutdown.ogg"
@@ -20,6 +19,7 @@ SysSD_snd="${SndPath}sys-shutdown.ogg"
 ## Allow only one bat-mon instance
 Count="$(pgrep -c bat-mon)"
 if [ "$Count" -ge "2" ]; then
+echo "bat-mon $(pgrep bab-mon) is running" >> /tmp/fbm.log
 exit
 else
 echo "Ban-mon is on the job!"
@@ -34,38 +34,51 @@ fi
 . ~/.fluxable/power.conf
      fi 
 
-## Are we running a GUI?/How will we notify?
-     if ! [ -z "$GUI" ]; then 
-INFcmd="notify-send -i "$ICON""
-     else
-INFcmd="/usr/bin/wall -n"
+## Notification script
+## Are we running a GUI?/Send GUI notification if so&
+## always send wall msgs if a VT console is open.  
+inform() {
+GUI="$(pidof Xorg)"
+     if [ -n "$GUI" ]; then 
+/usr/bin/notify-send -i "$Icon" "${1}"
+echo "GUI detected" >> /tmp/fbm.log
+CLI="$(users|wc -w)"
+if [ $CLI -ge "2" ]; then
+/usr/bin/wall -n $1
      fi
+     else
+/usr/bin/wall -n $1
+     fi
+echo "$CLI log-in TTYs are open" >> /tmp/fbm.log
+     }
 
 RunAs="$(id -u)"
-XDG_RUNTIME_DIR="/run/user/${RunAs}"
+#XDG_RUNTIME_DIR="/run/user/${RunAs}"
 echo "bat-mon ran $(date)" >> /tmp/fbm.log
 echo """""User id: ${RunAs}" >> /tmp/fbm.log 
-
 
  if [ -e "$BatPath" ]; then
 BatStat="$(<$BatPath/status)"
 else
-$INFcmd "Bat-mon can not access required data, so
+Msg1="Bat-mon can not access required data, so
 you will not be informed when battery charge is low.
 *this computer may shutdown with out warning."
+inform "$Msg1"
 fi
 
 ## Things to do when critical battery state is reached
 crit() {
 $PLAYcmd "$BatCrit_snd"
-$INFcmd "This computer will start shutting down in 1 minute!
-Save your work or risk losing recent changes.
-Alternatively, plug or pray!"
+Msg2="*This computer will start shutting down in 1 minute!
+*Save your work or risk losing recent changes.
+*Alternatively, Plug or Pray!"
+inform "$Msg2"
 sleep 60
 BatStat="$(<${BatPath}/status)"
      if [ "$BatStat" == "Charging" ]; then
 $PLAYcmd "$Charging_snd"
-$INFcmd "Your battery is charging, so system shutdown has been suspended."
+Msg3="*Your battery is charging, so system shutdown has been suspended."
+inform "$Msg3"
 test
      else
 $PLAYcmd "$SysSD_snd"
@@ -92,7 +105,8 @@ done
 crit
      elif [ "$CHARGE" -le "$BatLow" ]; then
 $PLAYcmd "$BatLow_snd"
-$INFcmd "*Low Battery Alert: ${CHARGE}% Remains*"
+Msg4="*Low Battery Alert: ${CHARGE}% Remains*"
+inform "$Msg4"
     test     
 fi
      fi
