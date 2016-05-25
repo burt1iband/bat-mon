@@ -20,7 +20,7 @@ SysSD_snd="${SndPath}sys-shutdown.ogg"
 Count="$(pgrep -c bat-mon)"
 if [ "$Count" -ge "2" ]; then
 bmp="$(pgrep bat-mon)"
-echo "$(date +%H:%M- bat-mon, "$bmp" is running" >> /tmp/fbm.log
+echo "$(date +%H:%M)- bat-mon, "$bmp" is running" >> /tmp/fbm.log
 exit
 fi
  
@@ -43,7 +43,7 @@ GUI="$(pidof Xorg)"
 echo "GUI detected" >> /tmp/fbm.log
 CLI="$(users|wc -w)"
 if [ $CLI -ge "2" ]; then
-/usr/bin/wall -n "$1"
+/usr/bin/wall -n $1
      fi
      else
 /usr/bin/wall -n $1
