@@ -6,6 +6,10 @@
 
 0.2.0: 23/05/2016- Systemd service and timer files now control the bat-mon script.
  This will be the first push to git, and hopefully we will have an AUR package today.
+
+0.2.1: 28/06/2016- Systemd files are now designed to be run by the user and use the user's config file if it exists.
+GUI notifications work now that the bat-mon script is run by normal users.
+
  
 * ToDo:
 Fix low battery test to keep running as long as we are below the low battery threshhold even when the battery is charging.
