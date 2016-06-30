@@ -41,14 +41,14 @@ GUI="$(pidof Xorg)"
 CLI="$(users|wc -w)"
      if [ -n "$GUI" ]; then 
 /usr/bin/notify-send -i "$Icon" "${1}"
-echo "GUI detected" >> /tmp/fbm.log
+echo "GUI detected- $(DATE)" >> /tmp/fbm.log
 if [ $CLI -ge "2" ]; then
 /usr/bin/wall -n $1
      fi
      else
 /usr/bin/wall -n $1
      fi
-echo "$CLI log-in TTYs are open" >> /tmp/fbm.log
+echo "$CLI log-in TTYs are open- $(DATE)" >> /tmp/fbm.log
      }
 
 RunAs="$(id -u)"
@@ -71,13 +71,15 @@ $PLAYcmd "$BatCrit_snd"
 Msg2="*This computer will start shutting down in 1 minute!
 *Save your work or risk losing recent changes.
 *Alternatively, Plug or Pray!"
-inform "$Msg2"
+inform "$Msg2" && \
+echo "Critical battery msg sent: $CHARGE" remains- $(DATE)" >> /tmp/fbm.log 
 sleep 60
 BatStat="$(<${BatPath}/status)"
      if [ "$BatStat" == "Charging" ]; then
 $PLAYcmd "$Charging_snd"
 Msg3="*Your battery is charging, so system shutdown has been suspended."
-inform "$Msg3"
+inform "$Msg3" && \
+echo "Battery charging- $(DATE)" >> /tmp/fbm.log
 test
      else
 $PLAYcmd "$SysSD_snd"
@@ -93,7 +95,8 @@ sleep "$Sleep"
      if [ "$CHARGE" -le "$BatCrit" ]; then
 crit
 elif [ "$CHARGE" -gt "$BatLow" ]; then
-exit
+Battery charge is $CHARGE: short interval monitoring ended at $(DATE)" 
+exit 0
 fi
 done
 }
@@ -105,7 +108,8 @@ crit
      elif [ "$CHARGE" -le "$BatLow" ]; then
 $PLAYcmd "$BatLow_snd"
 Msg4="*Low Battery Alert: ${CHARGE}% Remains*"
-inform "$Msg4"
+inform "$Msg4" && \
+echo "Low battery msg sent: ${CHARGE}\% remains- $(DATE)" >> /tmp/fbm.log
     test     
 fi
      fi

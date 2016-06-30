@@ -8,6 +8,7 @@
  This will be the first push to git, and hopefully we will have an AUR package today.
 
 0.2.1: 28/06/2016- Systemd files are now designed to be run by the user and use the user's config file if it exists.
+0.2.1: 28/06/2016- Systemd files are now designed to be run by the user and use the user's config file if it exists.
 GUI notifications work now that the bat-mon script is run by normal users.
 
  

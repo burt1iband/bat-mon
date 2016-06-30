@@ -1,10 +1,32 @@
 *README file for bat-mon- The battery charge monitor for Fluxable_Linux:
 
+* Introduction:
 Bat-mon is a minimalist battery charge monitor that alerts the user when the charge falls below a configured low battery level, and performs a user 
 defined action, usually powering the system off, when the critical level is reached.
 
 Bat-mon does not require a graphical session to perform its duties.
 Although it can be manually started or run as a cronjob, bat-mon is best controled by systemd.
 
+
+* Installation:
+Until a generic install script is written those not installing via their distro's package management system need only do the following.
+Copy bat-mon in to /usr/bin/ and make sure it is executable, e.g.
+sudo install -m 755 ./bat-mon /usr/bin/
+Copy the systemd service and timer files in to /usr/lib/systemd/user/
+sudo cp ./bat-mon.service ./bat-mon.timer /usr/lib/systemd/user/
+will do the trick.
+Enable the timer and start it as your user with the following comands.
+systemctl --user enable bat-mon.timer
+systemctl --user start bat-mon.timer
+Do this for each user that may log-in alone, i.e. you might want to enable for root, if you ever work as root with out any normal user logged in, usually 
+not a great practice. 
+
+
 * Configuration:
 The system wide bat-mon configuration file is /etc/fluxable/power.conf. The comments  should tell you what you need to know.
+
+User customizations can go in ~/.fluxable/power.conf
+ 
+
+* Troubleshooting:
+Some bat-mon session data is written to /tmp/fbm.log.
