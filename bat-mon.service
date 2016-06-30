@@ -7,5 +7,5 @@ RefuseManualStart=no
 [Service]
  Type=simple
 User=%I 
-ExecStart=/usr/local/bin/bat-mon
+ExecStart=/usr/bin/bat-mon
  
