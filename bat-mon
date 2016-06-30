@@ -3,7 +3,8 @@
 ## by B.H., 07/05/2016
 
 ## Define initial variables
-ActCrit="/sbin/poweroff"
+#ActCrit="/sbin/poweroff"
+ActCrit="systemctl poweroff -i"
 BatCrit="7"
 BatLow="20"
 SndPath="/usr/share/sounds/fluxable/"
