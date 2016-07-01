@@ -1,6 +1,6 @@
 #!/bin/bash
-## bat-mon
-## by B.H., 07/05/2016
+## bat-mon: a minimalist battery charge monitor that works with or without a graphical environment
+## by B.H., written for the Fluxability Project
 
 ## Define initial variables
 #ActCrit="/sbin/poweroff"
